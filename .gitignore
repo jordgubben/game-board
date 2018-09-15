@@ -7,6 +7,9 @@ repl-temp-*
 *.sublime-project
 *.sublime-workspace
 
+# Node
+node_modules/
+
 # Release archive
 releases/
 
