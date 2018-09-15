@@ -24,7 +24,7 @@ type alias EdgeSet a =
 
 
 type TerrainPalette t
-    = TerrainPalette (Dict String t)
+    = TerrainPalette (Dict Int t)
 
 
 
@@ -38,12 +38,29 @@ emptyPalette =
 
 addEdgeTile : EdgeSet Bool -> t -> TerrainPalette t -> TerrainPalette t
 addEdgeTile edgeSet tile (TerrainPalette dict) =
-    TerrainPalette (Dict.insert (toString edgeSet) tile dict)
+    TerrainPalette (Dict.insert (bakeKey edgeSet) tile dict)
 
 
 getEdgeTile : EdgeSet Bool -> TerrainPalette t -> Maybe t
 getEdgeTile edgeSet (TerrainPalette dict) =
-    Dict.get (toString edgeSet) dict
+    Dict.get (bakeKey edgeSet) dict
+
+
+{-| Create a comparable out of an edge set, so that we can use it as a Dict key
+-}
+bakeKey : EdgeSet Bool -> Int
+bakeKey edgeSet =
+    let
+        edgeValues =
+            [ ( .top, 1 ), ( .bottom, 2 ), ( .left, 4 ), ( .right, 8 ) ]
+
+        check ( hasEdge, val ) acc =
+            if hasEdge edgeSet then
+                val + acc
+            else
+                acc
+    in
+        edgeValues |> List.foldl check 0
 
 
 
