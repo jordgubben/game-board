@@ -337,8 +337,8 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
         gridStyle =
             style
                 [ ( "position", "relative" )
-                , "width" % gridWidth
-                , "height" % gridHeight
+                , ( "width", gridWidth ) |> px
+                , ( "height", gridHeight ) |> px
                 ]
 
         -- Create inner div(s) for every tile in grid
@@ -354,10 +354,10 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
                     [ class "grid-cell"
                     , style
                         [ ( "position", "absolute" )
-                        , "width" % tileWidth
-                        , "height" % tileHeight
-                        , "bottom" % tileBottom
-                        , "left" % tileLeft
+                        , ( "width", tileWidth ) |> px
+                        , ( "height", tileHeight ) |> px
+                        , ( "bottom", tileBottom ) |> px
+                        , ( "left", tileLeft ) |> px
                         , ( "overflow", "hidden" )
                         ]
                     ]
@@ -369,10 +369,8 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
             (Dict.toList grid |> List.map tileDiv)
 
 
-{-|
-
-    Local operator for css sizes and offsets in pixels
+{-| Helper for css-style sizes and offsets in pixels.
 -}
-(%) : String -> number -> ( String, String )
-(%) magnitude pixels =
+px : ( String, number ) -> ( String, String )
+px ( magnitude, pixels ) =
     ( magnitude, (toString pixels) ++ "px" )
