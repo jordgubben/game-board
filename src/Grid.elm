@@ -61,21 +61,24 @@ main =
                 |> put ( 5, -4 ) "Lower right"
                 |> put ( -2, -4 ) "Lower left"
 
-        cell coords content =
+        cellStyle =
+            style
+                [ ( "font-size", "10px" )
+                , ( "background-color", "lightblue" )
+                ]
+
+        cellToHtml coords content =
             Html.div
-                [ style
-                    [ ( "font-size", "10px" )
-                    , ( "background-color", "lightblue" )
-                    ]
+                [ cellStyle
                 ]
                 [ (Html.em [] [ Html.text (toString coords) ])
                 , (Html.p [] [ Html.text content ])
                 ]
     in
         Html.div []
-            [ (grid |> toHtmlTable cell)
+            [ (grid |> toHtmlTable cellToHtml)
             , Html.p [] [ Html.text "---" ]
-            , (grid |> toHtmlDiv ( 32, 32 ) cell)
+            , (grid |> toHtmlDiv ( 32, 32 ) cellToHtml)
             ]
 
 
@@ -349,10 +352,9 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
 
                 tileBottom =
                     (y - Bounds.minY grid) * tileHeight
-            in
-                Html.div
-                    [ class "grid-cell"
-                    , style
+
+                cellStyle =
+                    style
                         [ ( "position", "absolute" )
                         , ( "width", tileWidth ) |> px
                         , ( "height", tileHeight ) |> px
@@ -360,6 +362,10 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
                         , ( "left", tileLeft ) |> px
                         , ( "overflow", "hidden" )
                         ]
+            in
+                Html.div
+                    [ class "grid-cell"
+                    , cellStyle
                     ]
                     [ viewTile ( x, y ) content ]
     in
