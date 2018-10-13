@@ -130,7 +130,7 @@ type alias Size n =
     }
 
 
-{-| A Grid of tiles.
+{-| A Grid of cells.
 -}
 type alias Grid a =
     Dict Coords a
@@ -147,7 +147,7 @@ empty =
     Dict.empty
 
 
-{-| Create a grid from a list of coordnates+tile pairs
+{-| Create a grid from a list of coordnates+content pairs
 -}
 fromList : List ( Coords, a ) -> Grid a
 fromList =
@@ -161,18 +161,18 @@ fromList =
 {-| Draw a filled box that expands on positive axises from the origo (0,0).
 -}
 drawBox : t -> Size Int -> Grid t
-drawBox tile { width, height } =
+drawBox content { width, height } =
     List.range 0 (width - 1)
         |> List.map (\x -> List.range 0 (height - 1) |> List.map (\y -> ( x, y )))
         |> List.concat
-        |> List.map (\c -> ( c, tile ))
+        |> List.map (\c -> ( c, content ))
         |> fromList
 
 
 {-| Draw edges of a box that expands on positive axises from the origo (0,0).
 -}
 lineRect : t -> Size Int -> Grid t
-lineRect tile { width, height } =
+lineRect content { width, height } =
     let
         leftSide =
             List.range 0 (height - 1) |> List.map (\y -> ( 0, y ))
@@ -187,7 +187,7 @@ lineRect tile { width, height } =
             List.range 0 (width - 1) |> List.map (\x -> ( x, 0 ))
     in
         List.concat [ leftSide, rightSide, topSide, bottomSide ]
-            |> List.map (\coords -> ( coords, tile ))
+            |> List.map (\coords -> ( coords, content ))
             |> fromList
 
 
@@ -235,7 +235,7 @@ swap c1 c2 grid =
 -- # Editing
 
 
-{-| Place a tile in the Grid.
+{-| Put content in a Grid cell at the given Coords.
 -}
 put : Coords -> a -> Grid a -> Grid a
 put ( x, y ) cell =
@@ -246,14 +246,15 @@ put ( x, y ) cell =
 -- # Retrieval
 
 
-{-| Get a tile from a grid by position.
+{-| Ask for the content of a grid cell by position.
 -}
 get : Coords -> Grid a -> Maybe a
 get =
     Dict.get
 
 
-{-| Get a rect of tiles expanding positive axises (up and right) of from given coords
+{-| Get a rectangle of cells expanding positive axises (up and right)
+of from given coords.
 -}
 pickRect : Size Int -> Coords -> Grid a -> Grid a
 pickRect { width, height } ( left, bottom ) srcGrid =
@@ -265,7 +266,7 @@ pickRect { width, height } ( left, bottom ) srcGrid =
             left + width - 1
     in
         Dict.filter
-            (\( x, y ) tile ->
+            (\( x, y ) _ ->
                 (left <= x && x <= right) && (bottom <= y && y <= top)
             )
             srcGrid
@@ -372,13 +373,13 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
                 , ( "height", gridHeight ) |> px
                 ]
 
-        -- Create inner div(s) for every tile in grid
-        tileDiv ( ( x, y ), content ) =
+        -- Create inner div(s) for every occupied cell in grid
+        cellDiv ( ( x, y ), content ) =
             let
-                tileLeft =
+                cellLeft =
                     (x - Bounds.minX grid) * cellWidth
 
-                tileBottom =
+                cellBottom =
                     (y - Bounds.minY grid) * cellHeight
 
                 cellStyle =
@@ -386,8 +387,8 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
                         [ ( "position", "absolute" )
                         , ( "width", cellWidth ) |> px
                         , ( "height", cellHeight ) |> px
-                        , ( "bottom", tileBottom ) |> px
-                        , ( "left", tileLeft ) |> px
+                        , ( "bottom", cellBottom ) |> px
+                        , ( "left", cellLeft ) |> px
                         , ( "overflow", "hidden" )
                         ]
             in
@@ -397,10 +398,10 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
                     ]
                     [ viewContent ( x, y ) content ]
     in
-        -- Wrap tiles in a common outer div
+        -- Wrap cells in a common outer div
         Html.div
             [ class "grid", gridStyle ]
-            (Dict.toList grid |> List.map tileDiv)
+            (Dict.toList grid |> List.map cellDiv)
 
 
 {-| Render grid using SVG groups.
