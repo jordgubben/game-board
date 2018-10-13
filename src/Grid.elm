@@ -67,6 +67,15 @@ main =
                 , ( "background-color", "lightblue" )
                 ]
 
+        outerDivBlockStyle =
+            style
+                [ ( "display", "block" )
+                , ( "width", 300 ) |> px
+                , ( "height", 400 ) |> px
+                , ( "margin", 15 ) |> px
+                , ( "border", "5px solid darkgray" )
+                ]
+
         cellToHtml coords content =
             Html.div
                 [ cellStyle
@@ -74,11 +83,23 @@ main =
                 [ (Html.em [] [ Html.text (toString coords) ])
                 , (Html.p [] [ Html.text content ])
                 ]
+
+        cellToSvg coords content =
+            Svg.g []
+                [ Svg.circle [ SvgAt.cx "16", SvgAt.cy "16", SvgAt.r "16" ] []
+                , Svg.text_ [] [ Svg.text ((toString coords) ++ content) ]
+                ]
     in
         Html.div []
-            [ (grid |> toHtmlTable cellToHtml)
-            , Html.p [] [ Html.text "---" ]
-            , (grid |> toHtmlDiv ( 32, 32 ) cellToHtml)
+            [ Html.h1 [] [ Html.text "Game board render test" ]
+            , Html.div [ outerDivBlockStyle ]
+                [ Html.h2 [] [ Html.text "Using <table>" ]
+                , (grid |> toHtmlTable cellToHtml)
+                ]
+            , Html.div [ outerDivBlockStyle ]
+                [ Html.h2 [] [ Html.text "Using <div>" ]
+                , (grid |> toHtmlDiv ( 32, 32 ) cellToHtml)
+                ]
             ]
 
 
