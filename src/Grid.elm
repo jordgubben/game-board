@@ -1,4 +1,4 @@
-module Grid exposing (Grid, Coords, Size, empty, fromList, put, drawBox, lineRect, get, pickRect, numRows, numCols, translate, rotCv, rotCcv, swap, toHtmlTable, toHtmlDiv)
+module Grid exposing (Grid, Coords, Size, empty, fromList, put, drawBox, lineRect, get, pickRect, numRows, numCols, translate, rotCv, rotCcv, swap, toHtmlTable, toHtmlDiv, toSvgGroup)
 
 {-| Tile grid for (board game like) strategy games.
 
@@ -37,13 +37,15 @@ A Grid can be transformed in various ways.
 
 # Rendering
 
-@docs toHtmlTable, toHtmlDiv
+@docs toHtmlTable, toHtmlDiv, toSvgGroup
 
 -}
 
 import Dict exposing (Dict)
 import Html exposing (Html)
 import Html.Attributes exposing (style, class)
+import Svg
+import Svg.Attributes as SvgAt
 import Grid.Bounds as Bounds exposing (minY, minX, maxY, maxX)
 
 
@@ -99,6 +101,11 @@ main =
             , Html.div [ outerDivBlockStyle ]
                 [ Html.h2 [] [ Html.text "Using <div>" ]
                 , (grid |> toHtmlDiv ( 32, 32 ) cellToHtml)
+                ]
+            , Html.div [ outerDivBlockStyle ]
+                [ Html.h2 [] [ Html.text "Using <svg>" ]
+                , Svg.svg [ SvgAt.width "256", SvgAt.height "256", SvgAt.viewBox "-64 -96 256 256" ]
+                    [ (grid |> toSvgGroup ( 32, 32 ) cellToSvg) ]
                 ]
             ]
 
@@ -341,22 +348,22 @@ cellTdStyle =
 
 {-| Render grid using HTML divs.
 
-Parameters are:
+Arguments are:
 
-  - Tile size
+  - Grid cell size
   - Content render func
   - Grid to render
 
 -}
 toHtmlDiv : ( Int, Int ) -> (( Int, Int ) -> a -> Html msg) -> Grid a -> Html msg
-toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
+toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
     let
         -- Outer div properties
         gridWidth =
-            Bounds.numCols grid * tileWidth
+            Bounds.numCols grid * cellWidth
 
         gridHeight =
-            Bounds.numRows grid * tileHeight
+            Bounds.numRows grid * cellHeight
 
         gridStyle =
             style
@@ -369,16 +376,16 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
         tileDiv ( ( x, y ), content ) =
             let
                 tileLeft =
-                    (x - Bounds.minX grid) * tileWidth
+                    (x - Bounds.minX grid) * cellWidth
 
                 tileBottom =
-                    (y - Bounds.minY grid) * tileHeight
+                    (y - Bounds.minY grid) * cellHeight
 
                 cellStyle =
                     style
                         [ ( "position", "absolute" )
-                        , ( "width", tileWidth ) |> px
-                        , ( "height", tileHeight ) |> px
+                        , ( "width", cellWidth ) |> px
+                        , ( "height", cellHeight ) |> px
                         , ( "bottom", tileBottom ) |> px
                         , ( "left", tileLeft ) |> px
                         , ( "overflow", "hidden" )
@@ -388,12 +395,39 @@ toHtmlDiv ( tileWidth, tileHeight ) viewTile grid =
                     [ class "grid-cell"
                     , cellStyle
                     ]
-                    [ viewTile ( x, y ) content ]
+                    [ viewContent ( x, y ) content ]
     in
         -- Wrap tiles in a common outer div
         Html.div
             [ class "grid", gridStyle ]
             (Dict.toList grid |> List.map tileDiv)
+
+
+{-| Render grid using SVG groups.
+
+Arguments are:
+
+  - Grid cell size
+  - Content render func
+  - Grid to render
+
+(Note: Positive y-axis is up in this package, but down in SVG coordinates.
+This compromise to keep the behaviour of the function as close as possible
+to it's HTML siblings, while still maitaining unsuprising SVG behaviour
+inside content rendering functions.)
+
+-}
+toSvgGroup : ( Int, Int ) -> (Coords -> a -> Svg.Svg msg) -> Grid a -> Svg.Svg msg
+toSvgGroup ( cellWidth, cellHeight ) viewContent grid =
+    let
+        cellGroup : ( Coords, a ) -> Svg.Svg msg
+        cellGroup ( ( x, y ), content ) =
+            Svg.g
+                [ SvgAt.transform ("translate(" ++ (toString (x * cellWidth)) ++ " " ++ (toString (-y * cellHeight)) ++ ")")
+                ]
+                [ viewContent ( x, y ) content ]
+    in
+        Svg.g [] (Dict.toList grid |> List.map cellGroup)
 
 
 {-| Helper for css-style sizes and offsets in pixels.
