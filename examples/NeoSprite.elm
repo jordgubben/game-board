@@ -1,4 +1,4 @@
-module NeoSprite exposing (Sprite, toSvg, toHtml)
+module NeoSprite exposing (Sprite, Sheet, fromSheet, toSvg, toHtml)
 
 import Html exposing (Html, text)
 import Html.Attributes exposing (style)
@@ -31,6 +31,10 @@ main =
         ]
 
 
+
+-- # TYPES
+
+
 {-| A single Sprite on a sprite sheet image.
 -}
 type alias Sprite =
@@ -42,6 +46,33 @@ type alias Sprite =
     , spriteWidth : Int
     , spriteHeight : Int
     }
+
+
+{-| A sheet of (same size) Sprites organized in a grid.
+-}
+type alias Sheet =
+    { imageUrl : String
+    , imageWidth : Int
+    , imageHeight : Int
+    , spriteWidth : Int
+    , spriteHeight : Int
+    }
+
+
+fromSheet : Sheet -> ( Int, Int ) -> Sprite
+fromSheet sheet ( x, y ) =
+    { imageUrl = sheet.imageUrl
+    , imageWidth = sheet.imageWidth
+    , imageHeight = sheet.imageHeight
+    , spriteWidth = sheet.spriteWidth
+    , spriteHeight = sheet.spriteHeight
+    , offsetX = x * sheet.spriteWidth
+    , offsetY = y * sheet.spriteHeight
+    }
+
+
+
+-- # RENDERING
 
 
 {-| Convert Sprite to SVG.
@@ -117,24 +148,26 @@ fromInt i =
 
 
 
--- Example Sprite(s)
+-- # EXAMPLE
 
 
 breadSprite : Sprite
 breadSprite =
-    { imageUrl = "http://superattack.se/games/mai-chan/Thingy--sprites.png"
-    , imageWidth = 256
-    , imageHeight = 256
-    , offsetX = 64 * 0
-    , offsetY = 64 * 1
-    , spriteWidth = 64
-    , spriteHeight = 64
-    }
+    fromSheet exampleSheet ( 0, 1 )
 
 
 cocoBunSprite : Sprite
 cocoBunSprite =
-    { breadSprite
-        | offsetX = 64 * 3
-        , offsetY = 64 * 1
+    fromSheet exampleSheet ( 3, 1 )
+
+
+{-| A sample sheet of 4x4 sprites Borroeedfrom "Mai-chan's sweet buns".
+-}
+exampleSheet : Sheet
+exampleSheet =
+    { imageUrl = "http://superattack.se/games/mai-chan/Thingy--sprites.png"
+    , imageWidth = 256
+    , imageHeight = 256
+    , spriteWidth = 64
+    , spriteHeight = 64
     }
