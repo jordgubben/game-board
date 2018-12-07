@@ -31,6 +31,28 @@ main =
         ]
 
 
+breadSprite : Sprite
+breadSprite =
+    fromSheet exampleSheet ( 0, 1 )
+
+
+cocoBunSprite : Sprite
+cocoBunSprite =
+    fromSheet exampleSheet ( 3, 1 )
+
+
+{-| A sample sheet of 4x4 sprites Borroeedfrom "Mai-chan's sweet buns".
+-}
+exampleSheet : Sheet
+exampleSheet =
+    { imageUrl = "http://superattack.se/games/mai-chan/Thingy--sprites.png"
+    , imageWidth = 256
+    , imageHeight = 256
+    , spriteWidth = 64
+    , spriteHeight = 64
+    }
+
+
 
 -- # TYPES
 
@@ -145,29 +167,3 @@ px =
 fromInt : Int -> String
 fromInt i =
     i |> toString
-
-
-
--- # EXAMPLE
-
-
-breadSprite : Sprite
-breadSprite =
-    fromSheet exampleSheet ( 0, 1 )
-
-
-cocoBunSprite : Sprite
-cocoBunSprite =
-    fromSheet exampleSheet ( 3, 1 )
-
-
-{-| A sample sheet of 4x4 sprites Borroeedfrom "Mai-chan's sweet buns".
--}
-exampleSheet : Sheet
-exampleSheet =
-    { imageUrl = "http://superattack.se/games/mai-chan/Thingy--sprites.png"
-    , imageWidth = 256
-    , imageHeight = 256
-    , spriteWidth = 64
-    , spriteHeight = 64
-    }
