@@ -14,6 +14,7 @@
     "elm-upgrade": "^0.19.6"
   },
   "scripts": {
+    "reactor": "elm reactor",
     "build": "elm make src/Grid.elm",
     "format-all": "elm-format src/",
     "test": "elm-test"
