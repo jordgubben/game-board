@@ -73,19 +73,19 @@ main =
                 |> put ( -2, -4 ) "Lower left"
 
         cellStyle =
-            style
                 [ ( "font-size", "10px" )
                 , ( "background-color", "lightblue" )
                 ]
+                |> List.map (\ (n,v) -> style n v)
 
         outerDivBlockStyle =
-            style
                 [ ( "display", "block" )
                 , ( "width", 300 ) |> px
                 , ( "height", 400 ) |> px
                 , ( "margin", 15 ) |> px
                 , ( "border", "5px solid darkgray" )
                 ]
+                |> List.map (\ (n,v) -> style n v)
 
 
         coordsToString (cx,cy) = 
@@ -93,8 +93,7 @@ main =
 
         cellToHtml coords content =
             Html.div
-                [ cellStyle
-                ]
+                cellStyle
                 [ Html.em [] [ Html.text (coordsToString coords) ]
                 , Html.p [] [ Html.text content ]
                 ]
@@ -107,15 +106,15 @@ main =
     in
     Html.div []
         [ Html.h1 [] [ Html.text "Game board render test" ]
-        , Html.div [ outerDivBlockStyle ]
+        , Html.div outerDivBlockStyle
             [ Html.h2 [] [ Html.text "Using <table>" ]
             , grid |> toHtmlTable cellToHtml
             ]
-        , Html.div [ outerDivBlockStyle ]
+        , Html.div outerDivBlockStyle
             [ Html.h2 [] [ Html.text "Using <div>" ]
             , grid |> toHtmlDiv ( 32, 32 ) cellToHtml
             ]
-        , Html.div [ outerDivBlockStyle ]
+        , Html.div outerDivBlockStyle
             [ Html.h2 [] [ Html.text "Using <svg>" ]
             , Svg.svg [ SvgAt.width "256", SvgAt.height "256", SvgAt.viewBox "-64 -96 256 256" ]
                 [ grid |> toSvgGroup ( 32, 32 ) cellToSvg ]
@@ -316,7 +315,7 @@ toHtmlTable viewCell grid =
         Html.table [ class "grid" ] []
 
     else
-        Html.table [ class "grid", gridTableStyle ]
+        Html.table ( class "grid" :: gridTableStyle )
             (List.range (minY grid) (maxY grid)
                 |> List.reverse
                 |> List.map (\r -> toHtmlRow viewCell r grid)
@@ -329,7 +328,7 @@ toHtmlRow viewCell row grid =
         (List.range (minX grid) (maxX grid)
             |> List.map
                 (\column ->
-                    Html.td [ cellTdStyle, class "grid-cell" ]
+                    Html.td (class "grid-cell" :: cellTdStyle)
                         (let
                             coords =
                                 ( column, row )
@@ -345,21 +344,19 @@ toHtmlRow viewCell row grid =
         )
 
 
-gridTableStyle : Html.Attribute msg
+gridTableStyle : List (Html.Attribute msg)
 gridTableStyle =
-    style
-        [ ( "border-collapse", "collapse" )
-        ]
+    [style "border-collapse" "collapse" ]
 
 
-cellTdStyle : Html.Attribute msg
+cellTdStyle : List (Html.Attribute msg)
 cellTdStyle =
-    style
         [ ( "width", "32px" )
         , ( "height", "32px" )
         , ( "padding", "0" )
         , ( "border", "1px solid black" )
         ]
+        |> List.map (\ (n,v) -> style n v)
 
 
 {-| Render grid using HTML divs.
@@ -382,11 +379,11 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
             Bounds.numRows grid * cellHeight
 
         gridStyle =
-            style
                 [ ( "position", "relative" )
                 , ( "width", gridWidth ) |> px
                 , ( "height", gridHeight ) |> px
                 ]
+                |> List.map (\ (n,v) -> style n v)
 
         -- Create inner div(s) for every occupied cell in grid
         cellDiv ( ( x, y ), content ) =
@@ -398,24 +395,22 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
                     (y - Bounds.minY grid) * cellHeight
 
                 cellStyle =
-                    style
                         [ ( "position", "absolute" )
                         , ( "width", cellWidth ) |> px
                         , ( "height", cellHeight ) |> px
                         , ( "bottom", cellBottom ) |> px
                         , ( "left", cellLeft ) |> px
                         , ( "overflow", "hidden" )
-                        ]
+                        ] 
+                        |> List.map (\ (n,v) -> style n v)
             in
             Html.div
-                [ class "grid-cell"
-                , cellStyle
-                ]
+                ( class "grid-cell" :: cellStyle)
                 [ viewContent ( x, y ) content ]
     in
     -- Wrap cells in a common outer div
     Html.div
-        [ class "grid", gridStyle ]
+        ( class "grid" :: gridStyle)
         (Dict.toList grid |> List.map cellDiv)
 
 
