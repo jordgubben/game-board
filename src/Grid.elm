@@ -73,22 +73,21 @@ main =
                 |> put ( -2, -4 ) "Lower left"
 
         cellStyle =
-                [ ( "font-size", "10px" )
-                , ( "background-color", "lightblue" )
-                ]
-                |> List.map (\ (n,v) -> style n v)
+            [ ( "font-size", "10px" )
+            , ( "background-color", "lightblue" )
+            ]
+                |> List.map (\( n, v ) -> style n v)
 
         outerDivBlockStyle =
-                [ ( "display", "block" )
-                , ( "width", 300 ) |> px
-                , ( "height", 400 ) |> px
-                , ( "margin", 15 ) |> px
-                , ( "border", "5px solid darkgray" )
-                ]
-                |> List.map (\ (n,v) -> style n v)
+            [ ( "display", "block" )
+            , ( "width", 300 ) |> px
+            , ( "height", 400 ) |> px
+            , ( "margin", 15 ) |> px
+            , ( "border", "5px solid darkgray" )
+            ]
+                |> List.map (\( n, v ) -> style n v)
 
-
-        coordsToString (cx,cy) = 
+        coordsToString ( cx, cy ) =
             String.fromInt cx ++ "," ++ String.fromInt cy
 
         cellToHtml coords content =
@@ -315,7 +314,7 @@ toHtmlTable viewCell grid =
         Html.table [ class "grid" ] []
 
     else
-        Html.table ( class "grid" :: gridTableStyle )
+        Html.table (class "grid" :: gridTableStyle)
             (List.range (minY grid) (maxY grid)
                 |> List.reverse
                 |> List.map (\r -> toHtmlRow viewCell r grid)
@@ -346,17 +345,17 @@ toHtmlRow viewCell row grid =
 
 gridTableStyle : List (Html.Attribute msg)
 gridTableStyle =
-    [style "border-collapse" "collapse" ]
+    [ style "border-collapse" "collapse" ]
 
 
 cellTdStyle : List (Html.Attribute msg)
 cellTdStyle =
-        [ ( "width", "32px" )
-        , ( "height", "32px" )
-        , ( "padding", "0" )
-        , ( "border", "1px solid black" )
-        ]
-        |> List.map (\ (n,v) -> style n v)
+    [ ( "width", "32px" )
+    , ( "height", "32px" )
+    , ( "padding", "0" )
+    , ( "border", "1px solid black" )
+    ]
+        |> List.map (\( n, v ) -> style n v)
 
 
 {-| Render grid using HTML divs.
@@ -379,11 +378,11 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
             Bounds.numRows grid * cellHeight
 
         gridStyle =
-                [ ( "position", "relative" )
-                , ( "width", gridWidth ) |> px
-                , ( "height", gridHeight ) |> px
-                ]
-                |> List.map (\ (n,v) -> style n v)
+            [ ( "position", "relative" )
+            , ( "width", gridWidth ) |> px
+            , ( "height", gridHeight ) |> px
+            ]
+                |> List.map (\( n, v ) -> style n v)
 
         -- Create inner div(s) for every occupied cell in grid
         cellDiv ( ( x, y ), content ) =
@@ -395,22 +394,22 @@ toHtmlDiv ( cellWidth, cellHeight ) viewContent grid =
                     (y - Bounds.minY grid) * cellHeight
 
                 cellStyle =
-                        [ ( "position", "absolute" )
-                        , ( "width", cellWidth ) |> px
-                        , ( "height", cellHeight ) |> px
-                        , ( "bottom", cellBottom ) |> px
-                        , ( "left", cellLeft ) |> px
-                        , ( "overflow", "hidden" )
-                        ] 
-                        |> List.map (\ (n,v) -> style n v)
+                    [ ( "position", "absolute" )
+                    , ( "width", cellWidth ) |> px
+                    , ( "height", cellHeight ) |> px
+                    , ( "bottom", cellBottom ) |> px
+                    , ( "left", cellLeft ) |> px
+                    , ( "overflow", "hidden" )
+                    ]
+                        |> List.map (\( n, v ) -> style n v)
             in
             Html.div
-                ( class "grid-cell" :: cellStyle)
+                (class "grid-cell" :: cellStyle)
                 [ viewContent ( x, y ) content ]
     in
     -- Wrap cells in a common outer div
     Html.div
-        ( class "grid" :: gridStyle)
+        (class "grid" :: gridStyle)
         (Dict.toList grid |> List.map cellDiv)
 
 
