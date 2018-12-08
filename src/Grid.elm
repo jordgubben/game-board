@@ -87,18 +87,22 @@ main =
                 , ( "border", "5px solid darkgray" )
                 ]
 
+
+        coordsToString (cx,cy) = 
+            String.fromInt cx ++ "," ++ String.fromInt cy
+
         cellToHtml coords content =
             Html.div
                 [ cellStyle
                 ]
-                [ Html.em [] [ Html.text (toString coords) ]
+                [ Html.em [] [ Html.text (coordsToString coords) ]
                 , Html.p [] [ Html.text content ]
                 ]
 
         cellToSvg coords content =
             Svg.g []
                 [ Svg.circle [ SvgAt.cx "16", SvgAt.cy "16", SvgAt.r "16" ] []
-                , Svg.text_ [] [ Svg.text (toString coords ++ content) ]
+                , Svg.text_ [] [ Svg.text (coordsToString coords ++ content) ]
                 ]
     in
     Html.div []
@@ -435,7 +439,7 @@ toSvgGroup ( cellWidth, cellHeight ) viewContent grid =
         cellGroup : ( Coords, a ) -> Svg.Svg msg
         cellGroup ( ( x, y ), content ) =
             Svg.g
-                [ SvgAt.transform ("translate(" ++ toString (x * cellWidth) ++ " " ++ toString (-y * cellHeight) ++ ")")
+                [ SvgAt.transform ("translate(" ++ String.fromInt (x * cellWidth) ++ " " ++ String.fromInt (-y * cellHeight) ++ ")")
                 ]
                 [ viewContent ( x, y ) content ]
     in
@@ -444,6 +448,6 @@ toSvgGroup ( cellWidth, cellHeight ) viewContent grid =
 
 {-| Helper for css-style sizes and offsets in pixels.
 -}
-px : ( String, number ) -> ( String, String )
+px : ( String, Int ) -> ( String, String )
 px ( magnitude, pixels ) =
-    ( magnitude, toString pixels ++ "px" )
+    ( magnitude, String.fromInt pixels ++ "px" )
