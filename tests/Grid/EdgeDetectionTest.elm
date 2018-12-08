@@ -14,8 +14,8 @@ import Test exposing (..)
 terrainSculptingSuite =
     describe "Terrain sculpting"
         [ describe "TerrainPalette"
-            [ fuzz4 bool bool bool bool "Can store and retrive tiles based on EdgeSet" <|
-                \t b l r ->
+            [ fuzz2 (tuple (bool, bool)) (tuple (bool, bool)) "Can store and retrive tiles based on EdgeSet" <|
+                \(t,b) (l, r) ->
                     let
                         edgeSet =
                             EdgeSet t b l r
