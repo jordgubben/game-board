@@ -164,7 +164,7 @@ retrievalSuite =
                         -- Given a larger grid
                         srcGrid =
                             Grid.drawBox () (Size 10 10)
-                                |> Dict.map (\coords _ -> toString coords)
+                                |> Dict.map (\coords _ -> coordsToString coords)
 
                         -- When picking
                         pickedGrid =
@@ -174,7 +174,7 @@ retrievalSuite =
                         expectedGrid =
                             Grid.drawBox () (Size 2 2)
                                 |> Grid.translate ( 3, 4 )
-                                |> Dict.map (\coords _ -> toString coords)
+                                |> Dict.map (\coords _ -> coordsToString coords)
                     in
                     equal expectedGrid pickedGrid
             ]
@@ -225,6 +225,10 @@ renderingSuite =
 
 -- # Helpers
 
+coordsToString : Coords -> String
+coordsToString ( cx, cy ) =
+    String.fromInt cx ++ "," ++ String.fromInt cy
+
 
 exampleGrid : Grid String
 exampleGrid =
@@ -263,8 +267,6 @@ expectTileDivSize ( expWidth, expHeight ) html =
     html
         |> Query.fromHtml
         |> Query.has
-            [ style
-                [ ( "width", toString expWidth ++ "px" )
-                , ( "height", toString expHeight ++ "px" )
+                [ style "width" ( String.fromInt expWidth ++ "px" )
+                , style "height" ( String.fromInt expHeight ++ "px" )
                 ]
-            ]
