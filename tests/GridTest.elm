@@ -225,6 +225,7 @@ renderingSuite =
 
 -- # Helpers
 
+
 coordsToString : Coords -> String
 coordsToString ( cx, cy ) =
     String.fromInt cx ++ "," ++ String.fromInt cy
@@ -267,6 +268,6 @@ expectTileDivSize ( expWidth, expHeight ) html =
     html
         |> Query.fromHtml
         |> Query.has
-                [ style "width" ( String.fromInt expWidth ++ "px" )
-                , style "height" ( String.fromInt expHeight ++ "px" )
-                ]
+            [ style "width" (String.fromInt expWidth ++ "px")
+            , style "height" (String.fromInt expHeight ++ "px")
+            ]

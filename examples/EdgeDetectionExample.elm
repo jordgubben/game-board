@@ -91,15 +91,15 @@ view { landscape } =
                                 "lightblue"
 
                         cellStyle =
-                                [ ( "width", "100%" )
-                                , ( "height", "100%" )
-                                , ( "background-color", color )
-                                , ( "cursor", "pointer" )
-                                ]
-                                |> List.map (\ (n,v) -> style n v)
+                            [ ( "width", "100%" )
+                            , ( "height", "100%" )
+                            , ( "background-color", color )
+                            , ( "cursor", "pointer" )
+                            ]
+                                |> List.map (\( n, v ) -> style n v)
                     in
                     Html.div
-                        (cellStyle ++ [onClick (Toggle coords)])
+                        (cellStyle ++ [ onClick (Toggle coords) ])
                         [ Html.text " " ]
                 )
                 (Dict.union
@@ -163,17 +163,17 @@ edgeBox edgeColor fillColor edges =
                 fillColor
 
         boxStyle =
-                [ ( "width", "100%" )
-                , ( "height", "100%" )
-                , ( "background-color", fillColor )
-                , ( "box-sizing", "border-box" )
-                , ( "border", "5px solid " ++ fillColor )
-                , ( "border-left-color", borderStyle .left )
-                , ( "border-right-color", borderStyle .right )
-                , ( "border-top-color", borderStyle .top )
-                , ( "border-bottom-color", borderStyle .bottom )
-                ]
-                |> List.map (\ (n, v) -> style n v )
+            [ ( "width", "100%" )
+            , ( "height", "100%" )
+            , ( "background-color", fillColor )
+            , ( "box-sizing", "border-box" )
+            , ( "border", "5px solid " ++ fillColor )
+            , ( "border-left-color", borderStyle .left )
+            , ( "border-right-color", borderStyle .right )
+            , ( "border-top-color", borderStyle .top )
+            , ( "border-bottom-color", borderStyle .bottom )
+            ]
+                |> List.map (\( n, v ) -> style n v)
     in
     Html.div boxStyle []
 

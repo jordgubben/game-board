@@ -94,7 +94,7 @@ viewControlPanel { steps } =
         [ Html.span [] [ Html.text "Steps" ]
         , Html.button [ onClick (ModifySteps (0 + 1)) ] [ Html.text "▲" ]
         , Html.button [ onClick (ModifySteps (0 - 1)) ] [ Html.text "▼" ]
-        , Html.span [] [ steps |>  String.fromInt >> Html.text ]
+        , Html.span [] [ steps |> String.fromInt >> Html.text ]
         ]
 
 
