@@ -3,6 +3,7 @@ module EdgeDetectionExample exposing (Model, Msg(..), canvas, edgeBox, filler, i
 {-| Illustrate how edge detection can be used to outline areas on a grid
 -}
 
+import Browser
 import Dict exposing (Dict)
 import FloatingIslandsTiles exposing (renderTile, staticTile)
 import Grid
@@ -13,9 +14,9 @@ import Html.Events exposing (onClick)
 import Set exposing (Set)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.beginnerProgram { model = initialModel, update = update, view = view }
+    Browser.sandbox { init = initialModel, update = update, view = view }
 
 
 
@@ -90,17 +91,15 @@ view { landscape } =
                                 "lightblue"
 
                         cellStyle =
-                            style
                                 [ ( "width", "100%" )
                                 , ( "height", "100%" )
                                 , ( "background-color", color )
                                 , ( "cursor", "pointer" )
                                 ]
+                                |> List.map (\ (n,v) -> style n v)
                     in
                     Html.div
-                        [ cellStyle
-                        , onClick (Toggle coords)
-                        ]
+                        (cellStyle ++ [onClick (Toggle coords)])
                         [ Html.text " " ]
                 )
                 (Dict.union
@@ -164,7 +163,6 @@ edgeBox edgeColor fillColor edges =
                 fillColor
 
         boxStyle =
-            style
                 [ ( "width", "100%" )
                 , ( "height", "100%" )
                 , ( "background-color", fillColor )
@@ -175,8 +173,9 @@ edgeBox edgeColor fillColor edges =
                 , ( "border-top-color", borderStyle .top )
                 , ( "border-bottom-color", borderStyle .bottom )
                 ]
+                |> List.map (\ (n, v) -> style n v )
     in
-    Html.div [ boxStyle ] []
+    Html.div boxStyle []
 
 
 turfPalette : EdgeDetection.TerrainPalette FloatingIslandsTiles.Tile

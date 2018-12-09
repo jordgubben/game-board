@@ -1,17 +1,18 @@
 module MovementRangeExample exposing (main)
 
+import Browser
 import Dict exposing (Dict)
 import Grid exposing (Grid)
 import Grid.MovementRange as Range exposing (..)
-import Html exposing (beginnerProgram, button, div, text)
+import Html exposing (button, div, text)
 import Html.Attributes exposing (href, style)
 import Html.Events exposing (onClick)
 import Set exposing (Set)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    beginnerProgram { model = initialModel, view = view, update = update }
+    Browser.sandbox { init = initialModel, view = view, update = update }
 
 
 
@@ -87,26 +88,26 @@ view model =
         ]
 
 
-viewControlPanel : { b | steps : a } -> Html.Html Msg
+viewControlPanel : { b | steps : Int } -> Html.Html Msg
 viewControlPanel { steps } =
     Html.div []
         [ Html.span [] [ Html.text "Steps" ]
         , Html.button [ onClick (ModifySteps (0 + 1)) ] [ Html.text "▲" ]
         , Html.button [ onClick (ModifySteps (0 - 1)) ] [ Html.text "▼" ]
-        , Html.span [] [ Html.text (toString steps) ]
+        , Html.span [] [ steps |>  String.fromInt >> Html.text ]
         ]
 
 
 chartMovementRange : Coords -> Int -> Grid Bool -> Grid Bool
-chartMovementRange start steps tileMap =
+chartMovementRange start steps terrain =
     let
         range =
             Range.chart
-                (tileMap |> Dict.keys |> Set.fromList)
+                (terrain |> Dict.keys |> Set.fromList)
                 start
                 steps
     in
-    Set.foldr (\r m -> Grid.put r False m) tileMap range
+    Set.foldr (\r m -> Grid.put r False m) terrain range
 
 
 renderTile : Coords -> Coords -> Bool -> Html.Html Msg

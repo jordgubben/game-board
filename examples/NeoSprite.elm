@@ -159,8 +159,7 @@ px =
 
 
 {-| Convert Int to String.
-(Simplify migration to Elm 0.19)
 -}
 fromInt : Int -> String
-fromInt i =
-    i |> toString
+fromInt =
+    String.fromInt
